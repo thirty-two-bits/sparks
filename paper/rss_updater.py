@@ -85,7 +85,7 @@ def update_sources_for_responses(mapped_resps):
 
     for source, resp in successes:
         etag = ident(resp)
-        update_source_history(source.id, source.current_version, resp.text, etag)
+        update_source_history(source, resp.text, etag)
 
     return successes, failures
 
