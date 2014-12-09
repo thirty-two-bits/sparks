@@ -9,11 +9,9 @@ django-celery==3.1.16
 django-toolbelt==0.0.1
 dnspython==1.12.0
 eventlet==0.15.2
-gnureadline==6.3.3
 greenlet==0.4.5
 gunicorn==19.1.1
 httmock==1.2.2
-ipython==2.3.1
 kombu==3.0.24
 psycopg2==2.5.4
 pytz==2014.10
