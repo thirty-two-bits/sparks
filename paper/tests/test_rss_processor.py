@@ -20,7 +20,10 @@ class TestSources(TestCase):
 
     def create_source_history(self, source, content=DEFAULT_RSS_CONTENT):
         history = SourceHistory.objects.create(source_id=source.id, content=content)
+
         source.current_version = history
+        source.save()
+
         return history
 
     def test_parse_source_into_feed(self):
@@ -71,4 +74,4 @@ class TestSources(TestCase):
 
         assert source.needs_update is False
 
-        assert Article.objects.count() == 2
+        assert Article.objects.count() == 46

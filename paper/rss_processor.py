@@ -92,16 +92,15 @@ class Entry(dict):
 
     @property
     def link(self):
-        self.get('link')
+        return self.get('link')
 
 
-def feeds_to_entries(feeds):
-    for feed in feeds:
-        if not feed:
-            continue
+def feed_to_entries(feed):
+    if not feed:
+        return
 
-        for entry in feed.entries:
-            yield Entry.from_feed_entry(entry)
+    for entry in feed.entries:
+        yield Entry.from_feed_entry(entry)
 
 
 def create_article_from(entry):
@@ -126,7 +125,8 @@ def process_rss_feeds():
     total_pass = 0
     total_created = 0
     for source in qs_iter(rss_feeds, prefetch_related='current_version', n=10):
-        entries = feeds_to_entries([parse_source_into_feed(source)])
+        feed = parse_source_into_feed(source)
+        entries = feed_to_entries(feed)
         for entry in entries:
             article, created = create_article_from(entry)
 

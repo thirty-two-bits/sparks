@@ -165,3 +165,6 @@ class Source(models.Model):
     created = CreateDateTimeField()
     updated = LastModifiedDateTimeField()
     extra = DictField(default=dict)
+
+    def __repr__(self):
+        return u"Source(name='', url='')" % (self.name, self.url)
