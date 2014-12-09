@@ -153,7 +153,7 @@ MAX_FAILURES = 10
 class Source(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     url = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    kind = models.IntegerField(blank=True, null=True, choices=ORIGIN_KINDS, default=ORIGIN_KINDS.CURATED)
+    kind = models.IntegerField(blank=True, null=True, choices=SOURCE_KINDS, default=SOURCE_KINDS.RSS)
     update_freq = models.IntegerField(blank=True, null=True, default=DEFAULT_UPDATE_FREQ)
     failure_count = models.IntegerField(blank=True, null=True, default=0)
     status = models.IntegerField(blank=True, null=True, default=SOURCE_STATUS.ACTIVE, choices=SOURCE_STATUS)
