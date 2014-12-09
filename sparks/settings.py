@@ -127,5 +127,6 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(minutes=5),
     },
 }
-
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
