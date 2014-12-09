@@ -51,7 +51,6 @@ class SocialDatum(dict):
 class Article(models.Model):
     title = models.TextField(max_length=1000, null=True, blank=True)
     url = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    raw_url = models.CharField(max_length=255, null=True, blank=True, unique=True)
     processed = models.BooleanField(default=False)
     created = CreateDateTimeField()
     updated = LastModifiedDateTimeField()
@@ -168,3 +167,12 @@ class Source(models.Model):
 
     def __repr__(self):
         return u"Source(name='', url='')" % (self.name, self.url)
+
+
+class UrlMap(models.Model):
+    raw_url = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    canonical_url = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    created = CreateDateTimeField()
+    updated = LastModifiedDateTimeField()
+    extra = DictField(default=dict)
+

@@ -6,8 +6,9 @@ from django.utils.encoding import iri_to_uri
 
 from paucore.utils.data import qs_iter
 from sparksbase.urls import canonicalize_url
+from sparksasync.tasks import crawl_urls
 
-from .models import Source, SOURCE_STATUS, SOURCE_KINDS, Article
+from .models import Source, SOURCE_STATUS, SOURCE_KINDS, Article, UrlMap
 
 
 logger = logging.getLogger(__name__)
@@ -95,28 +96,38 @@ class Entry(dict):
         return self.get('link')
 
 
-def feed_to_entries(feed):
-    if not feed:
-        return
-
-    for entry in feed.entries:
-        yield Entry.from_feed_entry(entry)
-
-
 def create_article_from(entry):
-    articles = Article.objects.filter(url=entry.link)
-    if articles.count():
-        return articles[0], False
-
-    articles = Article.objects.filter(raw_url=entry.link)
-    if articles.count():
-        return articles[0], False
-
-    article, created = Article.objects.get_or_create(raw_url=entry.link, processed=False, defaults={
+    article, created = Article.objects.get_or_create(url=entry.link, defaults={
         'title': entry.title,
     })
 
     return article, created
+
+
+def canonical_urls_for_links(links):
+    link_map = {x: None for x in links}
+    urls = UrlMap.objects.filter(raw_url__in=links)
+
+    for url in urls:
+        if url.raw_url in link_map:
+            link_map[url.raw_url] = url.canonical_url
+
+    return link_map
+
+
+def lookup_empty_urls(link_map):
+    still_missing = [(link, link) for link, x in link_map.items() if x is None]
+
+    for link, resp in crawl_urls(still_missing):
+        if not resp:
+            continue
+
+        if resp.status_code != 200:
+            continue
+
+        link_map[link] = canonicalize_url(resp.url)
+
+    return link_map
 
 
 def process_rss_feeds():
@@ -126,8 +137,13 @@ def process_rss_feeds():
     total_created = 0
     for source in qs_iter(rss_feeds, prefetch_related='current_version', n=10):
         feed = parse_source_into_feed(source)
-        entries = feed_to_entries(feed)
+        entries = map(Entry.from_feed_entry, feed.entries)
+        links = map(lambda x: x.link, entries)
+        link_map = canonical_urls_for_links(links)
+        link_map = lookup_empty_urls(link_map)
+
         for entry in entries:
+            entry['link'] = link_map.get(entry.link, entry.link)
             article, created = create_article_from(entry)
 
             if created:

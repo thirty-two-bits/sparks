@@ -1,4 +1,5 @@
 import os
+import vcr
 
 from django.test import TestCase
 
@@ -8,9 +9,10 @@ from paper.rss_processor import (parse_source_into_feed, get_link_for_item, prep
 
 DEFAULT_TEST_FEED_URL = 'http://daringfireball.net/feeds/main'
 BASE_DIR = os.path.dirname(__file__) + '/data/'
+CASSETTE_DIR = BASE_DIR + '/cassettes/'
 
 DEFAULT_RSS_CONTENT = ''
-with open(BASE_DIR + 'daringfireball_2014_12_08.xml') as fd:
+with open(BASE_DIR + 'simple_daringfireball.xml') as fd:
     DEFAULT_RSS_CONTENT = fd.read()
 
 
@@ -39,7 +41,7 @@ class TestSources(TestCase):
 
         feed = parse_source_into_feed(source)
         link = get_link_for_item(feed.entries[0])
-        self.assertEquals(link, "http://www.paddedspaces.com/?df")
+        self.assertEquals(link, "http://recode.net/2014/12/04/amazon-unveils-its-own-line-of-diapers-confirming-partners-biggest-fears/")
 
     def test_prepare_title_from_item(self):
         source = self.create_source()
@@ -47,7 +49,7 @@ class TestSources(TestCase):
 
         feed = parse_source_into_feed(source)
         title = prepare_title_from_item(feed.entries[0])
-        self.assertEquals(title, "Padded Spaces")
+        self.assertEquals(title, "Amazon Elements: Amazon Unveils Its Own Diapers and Baby Wipes")
 
     def test_create_article_from(self):
         source = self.create_source()
@@ -64,14 +66,16 @@ class TestSources(TestCase):
 
         assert article1.id == article2.id
         assert created is False
-        assert article2.url is None
 
     def test_process_rss_feeds(self):
         source = self.create_source()
         self.create_source_history(source)
-        process_rss_feeds()
+
+        with vcr.use_cassette(CASSETTE_DIR + '/link_resp.yml'):
+            process_rss_feeds()
+
         source = Source.objects.get(pk=source.id)
 
         assert source.needs_update is False
 
-        assert Article.objects.count() == 46
+        assert Article.objects.count() == 1
