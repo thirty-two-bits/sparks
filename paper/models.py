@@ -49,7 +49,7 @@ class SocialDatum(dict):
 
 
 class Article(models.Model):
-    title = models.CharField(max_length=255, null=True, blank=True)
+    title = models.TextField(max_length=1000, null=True, blank=True)
     url = models.CharField(max_length=255, null=True, blank=True, unique=True)
     raw_url = models.CharField(max_length=255, null=True, blank=True, unique=True)
     processed = models.BooleanField(default=False)
