@@ -7,7 +7,7 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
-
+from datetime import timedelta
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -36,6 +36,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "djcelery",
+    'kombu.transport.django',
+    "sparksasync",
+    "sparksbase",
+    "paper",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -74,7 +79,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -84,7 +89,8 @@ STATIC_URL = '/static/'
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
-DATABASES['default'] = dj_database_url.config()
+defaulted = os.environ.get('WERCKER_POSTGRESQL_URL', 'sqlite://./data.sql')
+DATABASES['default'] = dj_database_url.config(default=defaulted)
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -101,3 +107,24 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+# Celery
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = os.environ.get('BROKER_URL', 'redis://127.0.0.1:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://127.0.0.1:6379/1')
+CELERY_CREATE_MISSING_QUEUES = True
+
+CELERY_ROUTES = {'sparksasync.tasks.urlopen': {'queue': 'http'}}
+
+UNIT_TESTING = False
+
+CELERYBEAT_SCHEDULE = {
+    'update_rss': {
+        'task': 'paper.tasks.update_rss',
+        'schedule': timedelta(minutes=5),
+    },
+}
+
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'

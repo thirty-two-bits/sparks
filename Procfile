@@ -1,1 +1,1 @@
-web: gunicorn sparks.wsgi --log-file -
+web: bin/worker.sh
