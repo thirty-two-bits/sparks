@@ -18,8 +18,8 @@ with open(BASE_DIR + 'daringfireball_2014_12_08.xml') as fd:
 
 
 class TestSources(TestCase):
-    def create_source(name='Daring Fireball', url=DEFAULT_TEST_FEED_URL, kind=SOURCE_KINDS.RSS):
-        return Source.objects.create(name=name, url=url)
+    def create_source(self, name='Daring Fireball', url=DEFAULT_TEST_FEED_URL, kind=SOURCE_KINDS.RSS):
+        return Source.objects.create(name=name, url=url, kind=kind)
 
     def test_sort_resps(self):
         source = self.create_source()

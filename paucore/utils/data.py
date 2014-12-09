@@ -21,22 +21,22 @@ def chunks(l, n=1000):
         yield l[i:i + n]
 
 
-def qs_chunks(qs):
-    return chunks(qs.values_list('pk', flat=True))
+def qs_chunks(qs, n=1000):
+    return chunks(qs.values_list('pk', flat=True), n)
 
 
-def qs_iter(qs, checkpoint=False, bulk_load_everything=False):
+def qs_iter(qs, checkpoint=False, prefetch_related=[], n=1000):
     iter_count = 0
-    for pk_chunk in qs_chunks(qs):
+    for pk_chunk in qs_chunks(qs, n):
         if checkpoint:
             logger.info('(checkpoint: iter=%d pk_chunk=%d..%d)', iter_count, pk_chunk[0], pk_chunk[-1])
 
-        objs = qs.model.objects.by_pk(pk_chunk)
+        objs = qs.model.objects.in_bulk(pk_chunk)
 
-        if bulk_load_everything:
-            qs.model.objects.bulk_load_everything(objs)
+        if prefetch_related:
+            qs.model.objects.prefetch_related(objs)
 
-        for obj in objs:
+        for pk, obj in objs.iteritems():
             yield obj
 
         iter_count += 1

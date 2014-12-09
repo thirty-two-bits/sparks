@@ -96,7 +96,7 @@ def update_rss_feeds():
     total_succcess = 0
     total_failures = 0
     total_feeds = 0
-    for chunk in chunks(rss_feeds):
+    for chunk in chunks(rss_feeds, n=100):
         source_by_id = {x.id: x for x in chunk}
         urls = map(lambda x: (x.id, x.url), chunk)
 
