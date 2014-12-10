@@ -119,6 +119,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'paper.tasks.update_rss',
         'schedule': timedelta(minutes=5),
     },
+    'process_rss': {
+        'task': 'paper.tasks.process_rss',
+        'schedule': timedelta(minutes=5),
+    },
 }
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
