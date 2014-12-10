@@ -6,7 +6,10 @@ from django.db import models
 
 from paucore.data.fields import CreateDateTimeField, LastModifiedDateTimeField, DictField, Choices
 from paucore.utils.date import datetime_to_secs
-
+from paucore.data.pack2 import (Pack2, SinglePack2Container, PackField, DictPack2Container,
+                                IntegerPackField, ListOfIDsPackField, AutoIncrementDictPack2Container,
+                                DateTimePackField, BoolPackField, ChoicesPackField, ListPackField,
+                                SetPackField, FloatPackField)
 
 ORIGIN_KINDS = Choices(
     (1, 'CURATED', 'curated'),
@@ -48,6 +51,17 @@ class SocialDatum(dict):
         return self.normalise(self.get('og', ''))
 
 
+class SocialData(Pack2):
+    og = PackField(key='o', docstring='Open Graph Meta Data', null_ok=True, default=dict)
+    twitter = PackField(key='t', docstring='Twitter Metadata', null_ok=True, default=dict)
+
+
+class ArticleInfo(Pack2):
+    author = PackField(key='a', docstring='author info', null_ok=True)
+    full_html = PackField(key='h', docstring='Full html of article', null_ok=True)
+    full_text = PackField(key='t', docstring='Full text of article', null_ok=True)
+
+
 class Article(models.Model):
     title = models.TextField(max_length=1000, null=True, blank=True)
     url = models.CharField(max_length=255, null=True, blank=True, unique=True)
@@ -64,6 +78,9 @@ class Article(models.Model):
     current_facebook_shares = models.IntegerField(blank=True, null=True)
     current_pinterest_shares = models.IntegerField(blank=True, null=True)
     current_total_shares = models.IntegerField(blank=True, null=True)
+
+    social_data = SinglePack2Container(pack_class=SocialData, field_name='extra_info', pack_key='s')
+    article_info = SinglePack2Container(pack_class=ArticleInfo, field_name='extra_info', pack_key='s')
 
     def update_timeseries(self):
         timeseries = self.extra.get('timeseries', [])

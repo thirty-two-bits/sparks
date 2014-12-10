@@ -118,7 +118,7 @@ def canonical_urls_for_links(links):
 def lookup_empty_urls(link_map):
     still_missing = [(link, link) for link, x in link_map.items() if x is None]
 
-    for link, resp in crawl_urls(still_missing):
+    for link, resp in crawl_urls(still_missing, timeout=15):
         if not resp:
             continue
 

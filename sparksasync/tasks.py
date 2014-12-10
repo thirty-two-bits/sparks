@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task()
-def urlopen(_id, url):
+def urlopen(_id, url, timeout=30):
     logger.info('Opening: %s', url)
     try:
         response = requests.get(url)
@@ -18,7 +18,7 @@ def urlopen(_id, url):
     return (_id, response)
 
 
-def crawl_urls(list_of_urls):
-    result = group(urlopen.s(_id, url) for _id, url in list_of_urls).apply_async()
+def crawl_urls(list_of_urls, timeout=30):
+    result = group(urlopen.s(_id, url, timeout=timeout) for _id, url in list_of_urls).apply_async()
     for _id, incoming_result in result.iterate():
         yield _id, incoming_result
