@@ -36,7 +36,7 @@ def set_origin_for_article(article):
 
 def process_articles():
     for articles in qs_iter_chunks(Article.objects.filter(processed=False), n=10):
-        links = ((_id, x.url) for _id, x in articles.items())
+        links = ((_id, x.url) for _id, x in articles.items() if x.url)
 
         for _id, resp in crawl_urls(links):
             article = articles.get(_id)
