@@ -7,7 +7,7 @@ class SourceAdmin(admin.ModelAdmin):
 
 
 class OriginAdmin(admin.ModelAdmin):
-    list_display = ('name', 'url', )
+    list_display = ('title', 'url', )
 
 
 class ArticleAdmin(admin.ModelAdmin):
