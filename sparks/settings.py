@@ -24,8 +24,8 @@ DEBUG = os.environ.get('DEBUG', 1) == 1
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
+ENVIRONMENT = 'dev'
 
 # Application definition
 
