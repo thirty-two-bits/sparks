@@ -1,4 +1,5 @@
 import requests
+from requests.exceptions import ConnectionError
 import logging
 
 from celery import shared_task, group
@@ -6,11 +7,13 @@ from celery import shared_task, group
 logger = logging.getLogger(__name__)
 
 
-@shared_task()
-def urlopen(_id, url, timeout=30):
+@shared_task(bind=True)
+def urlopen(self, _id, url, timeout=30):
     logger.info('Opening: %s', url)
     try:
         response = requests.get(url)
+    except ConnectionError, e:
+        raise self.retry(exc=e)
     except Exception:
         logger.exception('URL %s gave error', url)
         return (_id, None)
