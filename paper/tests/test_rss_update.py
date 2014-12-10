@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import os
+import responses
 
 from django.test import TestCase
 
@@ -7,7 +8,7 @@ from sparksbase.test_utils import create_mock_response
 
 from paper.models import Source, SOURCE_KINDS, DEFAULT_UPDATE_FREQ, SOURCE_STATUS, MAX_FAILURES
 from paper.rss_updater import (sort_resps, hash_content, set_next_update, update_for_failure,
-                               ident, update_source_history)
+                               ident, update_source_history, update_rss_feeds)
 
 DEFAULT_TEST_FEED_URL = 'http://daringfireball.net/feeds/main'
 BASE_DIR = os.path.dirname(__file__) + '/data/'
@@ -104,3 +105,17 @@ class TestSources(TestCase):
         source = Source.objects.get(id=source.id)
 
         assert source.needs_update is True
+
+    def test_update_rss_feeds(self):
+        source = self.create_source()
+        source.save()
+        with responses.mock:
+            responses.add(responses.GET, DEFAULT_TEST_FEED_URL,
+                          body=DEFAULT_RSS_CONTENT, status=200,
+                          content_type='application/xml')
+
+            update_rss_feeds()
+
+        source = Source.objects.get(id=source.id)
+
+        assert source.current_version is not None
