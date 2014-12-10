@@ -42,6 +42,22 @@ def qs_iter(qs, checkpoint=False, prefetch_related=[], n=1000):
         iter_count += 1
 
 
+def qs_iter_chunks(qs, checkpoint=False, prefetch_related=[], n=1000):
+    iter_count = 0
+    for pk_chunk in qs_chunks(qs, n):
+        if checkpoint:
+            logger.info('(checkpoint: iter=%d pk_chunk=%d..%d)', iter_count, pk_chunk[0], pk_chunk[-1])
+
+        objs = qs.model.objects.in_bulk(pk_chunk)
+
+        if prefetch_related:
+            qs.model.objects.prefetch_related(objs)
+
+        yield objs
+
+        iter_count += len(objs.values())
+
+
 def uniquify_slug(s, klass, slug_field='slug', filter_dict=None, exclude_dict=None):
     slug = s
 

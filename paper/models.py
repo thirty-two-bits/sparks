@@ -6,10 +6,7 @@ from django.db import models
 
 from paucore.data.fields import CreateDateTimeField, LastModifiedDateTimeField, DictField, Choices
 from paucore.utils.date import datetime_to_secs
-from paucore.data.pack2 import (Pack2, SinglePack2Container, PackField, DictPack2Container,
-                                IntegerPackField, ListOfIDsPackField, AutoIncrementDictPack2Container,
-                                DateTimePackField, BoolPackField, ChoicesPackField, ListPackField,
-                                SetPackField, FloatPackField)
+from paucore.data.pack2 import (Pack2, SinglePack2Container, PackField)
 
 ORIGIN_KINDS = Choices(
     (1, 'CURATED', 'curated'),
@@ -68,7 +65,7 @@ class Article(models.Model):
     processed = models.BooleanField(default=False)
     created = CreateDateTimeField()
     updated = LastModifiedDateTimeField()
-    origin = models.IntegerField(blank=True, null=True)
+    origin = models.ForeignKey(Origin, blank=True, null=True)
     extra = DictField(default=dict)
     init_twitter_shares = models.IntegerField(blank=True, null=True)
     init_facebook_shares = models.IntegerField(blank=True, null=True)
@@ -79,8 +76,8 @@ class Article(models.Model):
     current_pinterest_shares = models.IntegerField(blank=True, null=True)
     current_total_shares = models.IntegerField(blank=True, null=True)
 
-    social_data = SinglePack2Container(pack_class=SocialData, field_name='extra_info', pack_key='s')
-    article_info = SinglePack2Container(pack_class=ArticleInfo, field_name='extra_info', pack_key='s')
+    social_data = SinglePack2Container(pack_class=SocialData, field_name='extra', pack_key='s')
+    article_info = SinglePack2Container(pack_class=ArticleInfo, field_name='extra', pack_key='a')
 
     def update_timeseries(self):
         timeseries = self.extra.get('timeseries', [])
@@ -98,44 +95,7 @@ class Article(models.Model):
         return json.dumps(timeseries)
 
     def __repr__(self):
-        return '<SiteArticle %r %r>' % (self.get_site_display(), self.title)
-
-    def social_data(self, key):
-        data = SocialDatum()
-        if not self.extra:
-            return data
-
-        meta_data = self.extra.get('meta_data')
-        if not meta_data:
-            return data
-
-        if 'og' in meta_data:
-            data['og'] = meta_data['og'].get(key)
-
-        if 'twitter' in meta_data:
-            data['twitter'] = meta_data['twitter'].get(key)
-
-        return data
-
-    @property
-    def social_description(self):
-        return self.social_data('description')
-
-    @property
-    def social_title(self):
-        return self.social_data('title')
-
-    @property
-    def social_image(self):
-        image = self.extra.get('meta_data', {}).get('og', {}).get('image')
-
-        if isinstance(image, basestring):
-            return image
-
-        if isinstance(image, dict):
-            return image.get('src', '')
-
-        return None
+        return '<SiteArticle %r>' % (self.title,)
 
     @property
     def domain(self):
@@ -192,4 +152,3 @@ class UrlMap(models.Model):
     created = CreateDateTimeField()
     updated = LastModifiedDateTimeField()
     extra = DictField(default=dict)
-

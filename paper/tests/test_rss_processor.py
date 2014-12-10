@@ -16,7 +16,7 @@ with open(BASE_DIR + 'simple_daringfireball.xml') as fd:
     DEFAULT_RSS_CONTENT = fd.read()
 
 
-class TestSources(TestCase):
+class TestRssProcessor(TestCase):
     def create_source(self, name='Daring Fireball', url=DEFAULT_TEST_FEED_URL, kind=SOURCE_KINDS.RSS):
         return Source.objects.create(name=name, url=url, kind=kind)
 

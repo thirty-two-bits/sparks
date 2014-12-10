@@ -6,7 +6,15 @@ class SourceAdmin(admin.ModelAdmin):
     list_display = ('name', 'kind', )
 
 
+class OriginAdmin(admin.ModelAdmin):
+    list_display = ('name', 'url', )
+
+
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'url', )
+
+
 admin.site.register(Source, SourceAdmin)
 admin.site.register(SourceHistory)
-admin.site.register(Origin)
-admin.site.register(Article)
+admin.site.register(Origin, OriginAdmin)
+admin.site.register(Article, ArticleAdmin)

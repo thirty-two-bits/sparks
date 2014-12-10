@@ -8,10 +8,18 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(bind=True)
-def urlopen(self, _id, url, timeout=30):
+def urlopen(self, _id, url, timeout=30, headers=None):
     logger.info('Opening: %s', url)
+
+    headers = {
+        'User-Agent': 'Pangea Meta Data Bot v.1',
+    }
+
+    if headers:
+        headers.update(headers)
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
     except ConnectionError, e:
         raise self.retry(exc=e)
     except Exception:
