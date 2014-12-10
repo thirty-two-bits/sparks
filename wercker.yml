@@ -25,8 +25,8 @@ build:
           echo "pip version $(pip --version) running"
   after-steps:
     - wantedly/pretty-slack-notify:
-      webhook_url: $SLACK_WEBHOOK_URL
+        webhook_url: $SLACK_WEBHOOK_URL
 deploy:
-  after-steps:
-    - wantedly/pretty-slack-notify:
-      webhook_url: $SLACK_WEBHOOK_URL
+    after-steps:
+        - wantedly/pretty-slack-notify:
+            webhook_url: $SLACK_WEBHOOK_URL
