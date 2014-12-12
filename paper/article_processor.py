@@ -51,7 +51,6 @@ def process_articles():
 
             article = set_meta_data_for_resp(article, resp)
             article = set_origin_for_article(article)
-            print "Article has been processed"
             article.processed = True
             article.save()
 
