@@ -8,7 +8,7 @@ from .models import Article
 
 def update_facebook_stats():
     seven_days_ago = datetime.utcnow() - timedelta(days=7)
-    articles = Article.objects.filter(processed=True, created_gte=seven_days_ago)
+    articles = Article.objects.filter(processed=True, created__gte=seven_days_ago)
     for chunk in qs_iter_chunks(articles, n=100):
         urls = {x.url: x for x in chunk.values()}
 
