@@ -1,4 +1,5 @@
 import logging
+import itertools
 
 from bs4 import BeautifulSoup
 import feedparser
@@ -137,7 +138,7 @@ def process_rss_feeds():
     total_created = 0
     for source in qs_iter(rss_feeds, prefetch_related='current_version', n=10):
         feed = parse_source_into_feed(source)
-        entries = map(Entry.from_feed_entry, feed.entries)
+        entries = list(itertools.ifilter(None, itertools.imap(Entry.from_feed_entry, feed.entries)))
         links = map(lambda x: x.link, entries)
         link_map = canonical_urls_for_links(links)
         link_map = lookup_empty_urls(link_map)

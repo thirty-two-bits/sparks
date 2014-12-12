@@ -36,11 +36,11 @@ def set_origin_for_article(article):
 
 def process_articles():
     for articles in qs_iter_chunks(Article.objects.filter(processed=False), n=10):
-        links = ((_id, x.url) for _id, x in articles.items() if x.url)
-
+        links = [(_id, x.url) for _id, x in articles.items() if x.url]
         for _id, resp in crawl_urls(links):
             article = articles.get(_id)
             if not resp:
+                print "Didn't get a response"
                 logger.error("Failed to fetch page for article_id: %s url: %s", article.id, article.url)
                 continue
 
@@ -51,7 +51,7 @@ def process_articles():
 
             article = set_meta_data_for_resp(article, resp)
             article = set_origin_for_article(article)
-
+            print "Article has been processed"
             article.processed = True
             article.save()
 

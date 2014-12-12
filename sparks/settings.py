@@ -36,7 +36,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'raven.contrib.django.raven_compat',
     "djcelery",
     'kombu.transport.django',
     "sparksasync",
@@ -127,12 +126,12 @@ CELERYBEAT_SCHEDULE = {
         'task': 'paper.tasks.process_articles',
         'schedule': timedelta(minutes=5),
     },
+    'update_facebook': {
+        'task': 'paper.tasks.update_facebook',
+        'schedule': timedelta(minutes=5),
+    },
 }
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-
-RAVEN_CONFIG = {
-    'dsn': 'https://599822454b0e476aacf62458f65982d9:bc58c995ca6d4286904b0ba2de21c422@app.getsentry.com/34410',
-}

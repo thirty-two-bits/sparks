@@ -1,32 +1,15 @@
-import os
 import vcr
 
 from django.test import TestCase
 
-from paper.models import Source, SourceHistory, Article, SOURCE_KINDS
+from paper.models import Source, Article
 from paper.rss_processor import (parse_source_into_feed, get_link_for_item, prepare_title_from_item,
                                  Entry, create_article_from, process_rss_feeds)
 
-DEFAULT_TEST_FEED_URL = 'http://daringfireball.net/feeds/main'
-BASE_DIR = os.path.dirname(__file__) + '/data/'
-CASSETTE_DIR = BASE_DIR + '/cassettes/'
-
-DEFAULT_RSS_CONTENT = ''
-with open(BASE_DIR + 'simple_daringfireball.xml') as fd:
-    DEFAULT_RSS_CONTENT = fd.read()
+from .mock_models import MockModel
 
 
-class TestRssProcessor(TestCase):
-    def create_source(self, name='Daring Fireball', url=DEFAULT_TEST_FEED_URL, kind=SOURCE_KINDS.RSS):
-        return Source.objects.create(name=name, url=url, kind=kind)
-
-    def create_source_history(self, source, content=DEFAULT_RSS_CONTENT):
-        history = SourceHistory.objects.create(source_id=source.id, content=content)
-
-        source.current_version = history
-        source.save()
-
-        return history
+class TestRssProcessor(MockModel, TestCase):
 
     def test_parse_source_into_feed(self):
         source = self.create_source()
@@ -71,11 +54,11 @@ class TestRssProcessor(TestCase):
         source = self.create_source()
         self.create_source_history(source)
 
-        with vcr.use_cassette(CASSETTE_DIR + '/link_resp.yml'):
+        with vcr.use_cassette(self.CASSETTE_DIR + '/link_resp.yml'):
             process_rss_feeds()
 
         source = Source.objects.get(pk=source.id)
 
         assert source.needs_update is False
 
-        assert Article.objects.count() == 1
+        self.assertEquals(Article.objects.count(), 1)

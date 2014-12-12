@@ -143,7 +143,7 @@ class Source(models.Model):
     extra = DictField(default=dict)
 
     def __repr__(self):
-        return u"Source(name='', url='')" % (self.name, self.url)
+        return u"Source(name='%s', url='%s')" % (self.name, self.url)
 
 
 class UrlMap(models.Model):

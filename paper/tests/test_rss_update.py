@@ -6,22 +6,18 @@ from django.test import TestCase
 
 from sparksbase.test_utils import create_mock_response
 
-from paper.models import Source, SOURCE_KINDS, DEFAULT_UPDATE_FREQ, SOURCE_STATUS, MAX_FAILURES
+from paper.models import Source, DEFAULT_UPDATE_FREQ, SOURCE_STATUS, MAX_FAILURES
 from paper.rss_updater import (sort_resps, hash_content, set_next_update, update_for_failure,
                                ident, update_source_history, update_rss_feeds)
 
-DEFAULT_TEST_FEED_URL = 'http://daringfireball.net/feeds/main'
+
+from .mock_models import MockModel
+
+
 BASE_DIR = os.path.dirname(__file__) + '/data/'
 
-DEFAULT_RSS_CONTENT = ''
-with open(BASE_DIR + 'daringfireball_2014_12_08.xml') as fd:
-    DEFAULT_RSS_CONTENT = fd.read()
 
-
-class TestSources(TestCase):
-    def create_source(self, name='Daring Fireball', url=DEFAULT_TEST_FEED_URL, kind=SOURCE_KINDS.RSS):
-        return Source.objects.create(name=name, url=url, kind=kind)
-
+class TestSources(MockModel, TestCase):
     def test_sort_resps(self):
         source = self.create_source()
         resp = create_mock_response('')
@@ -64,33 +60,33 @@ class TestSources(TestCase):
         assert source.status == SOURCE_STATUS.DISABLED_FOR_FAILURE
 
     def test_ident(self):
-        resp_no_etag = create_mock_response(DEFAULT_RSS_CONTENT)
+        resp_no_etag = create_mock_response(self.DEFAULT_RSS_CONTENT)
         etag = 'xyz'
-        resp_etag = create_mock_response(DEFAULT_RSS_CONTENT, extra_headers={
+        resp_etag = create_mock_response(self.DEFAULT_RSS_CONTENT, extra_headers={
             'ETag': etag
         })
 
         self.assertEquals(etag, ident(resp_etag))
-        self.assertEquals('8ed228cc9f1c0b3c89562156bf273c94fb5e0ce1863ccc425cac03d274295772', ident(resp_no_etag))
+        self.assertEquals('5f5424e1ce213e5803299db41c3245f2018c80087a7e4b11abe2e0d230d59f46', ident(resp_no_etag))
 
     def test_update_source_history(self):
         source = self.create_source()
         resp = create_mock_response('')
         etag = ident(resp)
         rev_1 = update_source_history(source, resp.text, etag)
-        resp = create_mock_response(DEFAULT_RSS_CONTENT)
+        resp = create_mock_response(self.DEFAULT_RSS_CONTENT)
         etag = ident(resp)
         rev_2 = update_source_history(source, resp.text, etag)
 
         assert rev_1.id != rev_2.id
 
-        resp = create_mock_response(DEFAULT_RSS_CONTENT)
+        resp = create_mock_response(self.DEFAULT_RSS_CONTENT)
         etag = ident(resp)
         rev_3 = update_source_history(source, resp.text, etag)
 
         assert rev_2.id == rev_3.id
 
-        resp = create_mock_response(DEFAULT_RSS_CONTENT, extra_headers={
+        resp = create_mock_response(self.DEFAULT_RSS_CONTENT, extra_headers={
             'ETag': '123',
         })
 
@@ -110,8 +106,8 @@ class TestSources(TestCase):
         source = self.create_source()
         source.save()
         with responses.mock:
-            responses.add(responses.GET, DEFAULT_TEST_FEED_URL,
-                          body=DEFAULT_RSS_CONTENT, status=200,
+            responses.add(responses.GET, self.DEFAULT_TEST_FEED_URL,
+                          body=self.DEFAULT_RSS_CONTENT, status=200,
                           content_type='application/xml')
 
             update_rss_feeds()
