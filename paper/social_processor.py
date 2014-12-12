@@ -14,7 +14,7 @@ def update_facebook_stats():
 
         results = facebook(urls.keys())
         for url, result in results.iteritems():
-            article = url.get(url)
+            article = urls.get(url)
             if article:
                 article.current_facebook_shares = result.get('share_count', 0)
                 article.save()
