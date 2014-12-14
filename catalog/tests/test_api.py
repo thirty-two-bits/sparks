@@ -28,3 +28,6 @@ class TestApi(MockModel, TestCase):
         self.assertEqual(response.status_code, 200)
         resp = json.loads(response.content)
         assert len(resp) == 1
+
+        assert 'title' in resp[0]
+        assert resp[0]['title'] != ''
