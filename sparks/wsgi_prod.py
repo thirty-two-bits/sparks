@@ -33,5 +33,7 @@ class StaffDebugWSGIHandler(WSGIHandler):
         # not logged in or not a staff user, display normal public 500
         return super(StaffDebugWSGIHandler, self).handle_uncaught_exception(request, resolver, exc_info)
 
+import django
+django.setup()
 
 application = DjangoWhiteNoise(StaffDebugWSGIHandler())
