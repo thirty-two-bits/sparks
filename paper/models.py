@@ -49,8 +49,8 @@ class SocialDatum(dict):
 
 
 class SocialData(Pack2):
-    og = PackField(key='o', docstring='Open Graph Meta Data', null_ok=True, default=dict)
-    twitter = PackField(key='t', docstring='Twitter Metadata', null_ok=True, default=dict)
+    og = PackField(key='o', docstring='Open Graph Meta Data', null_ok=True, default=lambda x: dict())
+    twitter = PackField(key='t', docstring='Twitter Metadata', null_ok=True, default=lambda x: dict())
 
     def get_social_value(self, key):
         if self.og and self.og.get(key):
