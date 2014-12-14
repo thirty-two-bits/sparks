@@ -53,10 +53,10 @@ class SocialData(Pack2):
     twitter = PackField(key='t', docstring='Twitter Metadata', null_ok=True, default=dict)
 
     def get_social_value(self, key):
-        if self.og and key in self.og:
+        if self.og and self.og.get(key):
             return self.og[key]
 
-        if self.twitter and key in self.twitter:
+        if self.twitter and key in self.twitter.get(key):
             return self.twitter[key]
 
         return None
