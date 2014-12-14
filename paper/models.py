@@ -52,6 +52,23 @@ class SocialData(Pack2):
     og = PackField(key='o', docstring='Open Graph Meta Data', null_ok=True, default=dict)
     twitter = PackField(key='t', docstring='Twitter Metadata', null_ok=True, default=dict)
 
+    def get_social_value(self, key):
+        if self.og and key in self.og:
+            return self.og[key]
+
+        if self.twitter and key in self.twitter:
+            return self.twitter[key]
+
+        return None
+
+    @property
+    def description(self):
+        return self.get_social_value('description')
+
+    @property
+    def title(self):
+        return self.get_social_value('title')
+
 
 class ArticleInfo(Pack2):
     author = PackField(key='a', docstring='author info', null_ok=True)
