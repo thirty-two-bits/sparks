@@ -32,8 +32,8 @@ def article_to_json(article):
         'title': article.title,
         'url': article.url,
         'current_facebook_shares': article.current_facebook_shares,
-        'description': articles.social_data.description,
-        'author': articles.article_info.author,
+        'description': article.social_data.description,
+        'author': article.article_info.author,
     }
 
 
