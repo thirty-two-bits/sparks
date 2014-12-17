@@ -4,13 +4,13 @@
 <div loading-container="tableParams.settings().$loading">
   <table ng-table="tableParams" show-filter="true" class="table">
     <tbody>
-      <tr ng-repeat="user in $data">
-        <td data-title="'Title'" filter="{ 'name': 'text' }" sortable="name">
-                {{user.name}}
+      <tr ng-repeat="article in $data">
+        <td data-title="'Title'" sortable="title">
+                {{article.title}}
                 {{$loading}}
             </td>
-        <td data-title="'Age'" sortable="age">
-                {{user.age}}
+        <td data-title="'Social Shares'" sortable="current_facebook_shares">
+                {{article.current_facebook_shares}}
             </td>
       </tr>
     </tbody>
