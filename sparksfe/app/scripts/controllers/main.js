@@ -9,7 +9,7 @@
  */
 angular.module('sparksfeApp')
   .controller('MainCtrl', function ($scope, $timeout, $resource, ngTableParams) {
-    var Api = $resource('https:///api/articles');
+    var Api = $resource('https://mysterious-springs-6760.herokuapp.com/api/articles/');
 
     $scope.tableParams = new ngTableParams({
         page: 1,            // show first page

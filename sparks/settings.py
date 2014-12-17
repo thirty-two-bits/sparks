@@ -187,3 +187,7 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.pocket.PocketAuth',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ORIGIN_REGEX_WHITELIST = ('^(https?://).*$', )

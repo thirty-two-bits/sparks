@@ -9,6 +9,13 @@ class TestApi(MockModel, TestCase):
     def setUp(self):
         self.setup_basic_system()
 
+    def test_cors(self):
+        response = self.client.options('/api/admin/stats/', HTTP_ORIGIN='http://google.com', HTTP_ACCESS_CONTROL_REQUEST_METHOD='GET')
+        assert response.status_code == 200
+        assert response['Access-Control-Allow-Origin'] == 'http://google.com'
+        response = self.client.get('/api/admin/stats/', HTTP_ORIGIN='http://google.com')
+        assert response['Access-Control-Allow-Origin'] == 'http://google.com'
+
     def test_admin_stats_endpoint(self):
         response = self.client.get('/api/admin/stats/')
         self.assertEqual(response.status_code, 200)

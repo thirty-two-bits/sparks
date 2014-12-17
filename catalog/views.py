@@ -4,8 +4,26 @@ import json
 from django.http import HttpResponse
 
 from paper.models import Article, Source, Origin
+from corsheaders.middleware import CorsMiddleware
+
+cors_middleware = CorsMiddleware()
 
 
+def allow_cors(func):
+    def func_wrapper(request, *args, **kwargs):
+        resp = cors_middleware.process_request(request)
+
+        if not resp:
+            resp = func(request, *args, **kwargs)
+
+        resp = cors_middleware.process_response(request, resp)
+
+        return resp
+
+    return func_wrapper
+
+
+@allow_cors
 def stats(request):
     data = {}
     articles = Article.objects.all()
@@ -37,6 +55,7 @@ def article_to_json(article):
     }
 
 
+@allow_cors
 def articles(request):
     data = {}
     three_days_ago = datetime.utcnow() - timedelta(days=3)
