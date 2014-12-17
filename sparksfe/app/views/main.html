@@ -6,12 +6,11 @@
     <tbody>
       <tr ng-repeat="article in $data">
         <td data-title="'Title'" sortable="title">
-                {{article.title}}
-                {{$loading}}
-            </td>
+          <a ng-href='{{ article.url }}' target='_blank'>{{article.title}}</a>
+        </td>
         <td data-title="'Social Shares'" sortable="current_facebook_shares">
-                {{article.current_facebook_shares}}
-            </td>
+            {{article.current_facebook_shares}}
+        </td>
       </tr>
     </tbody>
   </table>

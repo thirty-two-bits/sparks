@@ -59,7 +59,9 @@ def article_to_json(article):
 def articles(request):
     data = {}
     three_days_ago = datetime.utcnow() - timedelta(days=3)
-    articles = Article.objects.filter(created__gte=three_days_ago, processed=True)[0:200]
+    articles = Article.objects.filter(created__gte=three_days_ago, processed=True)
+    articles = articles.order_by('current_facebook_shares')
+    articles = articles[0:200]
 
     data = map(article_to_json, articles)
 
