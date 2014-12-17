@@ -45,3 +45,7 @@ def articles(request):
     data = map(article_to_json, articles)
 
     return HttpResponse(json.dumps(data), content_type='application/javascript')
+
+
+def auth_done(request):
+    return HttpResponse('Thanks, we got it from here.')

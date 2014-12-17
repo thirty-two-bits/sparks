@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'f)-7*k0b@(49ek*yx*!-_1+a+ss%4yubw7^z2%6a_wxd%#ab)y'
+SECRET_KEY = os.environ.get('SECRET_KEY', '123')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 1) == 1
@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social.apps.django_app.default',
     "djcelery",
     'kombu.transport.django',
     "sparksasync",
@@ -178,3 +179,11 @@ LOGGING = {
         },
     },
 }
+
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
+SOCIAL_AUTH_POCKET_CONSUMER_KEY = os.environ.get('SOCIAL_AUTH_POCKET_CONSUMER_KEY', '123')
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.pocket.PocketAuth',
+    'django.contrib.auth.backends.ModelBackend',
+)
