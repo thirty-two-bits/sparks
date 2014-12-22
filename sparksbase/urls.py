@@ -44,6 +44,9 @@ query_param_black_list = [
     'utm_term',
     'utm_content',
     'utm_campaign',
+    '_r',  # NY times
+    'emc',  # NY times
+    'partner',  # NY times
 ]
 
 

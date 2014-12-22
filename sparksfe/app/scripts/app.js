@@ -8,27 +8,22 @@
  *
  * Main module of the application.
  */
-angular
-  .module('sparksfeApp', [
+angular.module('sparksfeApp', [
     'ngAnimate',
     'ngCookies',
     'ngResource',
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'ngTable'
-  ])
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
+    'ui.router',
+]).config(function ($stateProvider, $urlRouterProvider, sparkApiProvider) {
+
+  sparkApiProvider.setApiBase('http://localhost:9000');
+  $urlRouterProvider.otherwise("/");
+
+  $stateProvider.state('main', {
+      url: "/",
+      templateUrl: 'views/main.html',
+      controller: 'MainCtrl'
   });
+});
