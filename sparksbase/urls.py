@@ -47,6 +47,7 @@ query_param_black_list = [
     '_r',  # NY times
     'emc',  # NY times
     'partner',  # NY times
+    'mbid',
 ]
 
 

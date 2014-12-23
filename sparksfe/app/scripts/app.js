@@ -11,19 +11,24 @@
 angular.module('sparksfeApp', [
     'ngAnimate',
     'ngCookies',
-    'ngResource',
     'ngRoute',
     'ngSanitize',
     'ngTouch',
     'ui.router',
-]).config(function ($stateProvider, $urlRouterProvider, sparkApiProvider) {
+    'truncate',
+]).config(function ($stateProvider, $urlRouterProvider, $locationProvider, SparkApiProvider) {
 
-  sparkApiProvider.setApiBase('http://localhost:9000');
+  SparkApiProvider.setApiBase('http://localhost:5000/api');
   $urlRouterProvider.otherwise("/");
-
+  $locationProvider.html5Mode(true);
   $stateProvider.state('main', {
       url: "/",
       templateUrl: 'views/main.html',
-      controller: 'MainCtrl'
+      resolve: {
+        articles: function (SparkApi, $stateParams) {
+          return SparkApi.articles();
+        }
+      },
+      controller: 'MainCtrl',
   });
 });

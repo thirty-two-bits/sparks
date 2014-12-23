@@ -1,0 +1,17 @@
+<div class='row'>
+  <div class='col-xs-12'>
+    <table class='table table-condensed'>
+      <thead>
+          <th>Title</th>
+          <th>FB Shares</th>
+      </thead>
+      <tr ng-repeat='article in articles.data'>
+        <td>
+          <span class='h4 ellipse'><a ng-href='{{article.url}}' ng-bind='article.title | characters:75' target='_blank'></a></span>
+          <p ng-bind='article.description'></p>
+        </td>
+        <td ng-bind='article.current_facebook_shares'></td>
+      </tr>
+    </table>
+  </div>
+</div>

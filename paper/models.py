@@ -120,6 +120,14 @@ class Article(models.Model):
         netloc = parts.netloc
         return netloc.replace('www.', '')
 
+    @property
+    def effective_title(self):
+        social_title = self.social_data.title
+        if social_title:
+            return social_title
+
+        return self.title
+
 
 class SourceHistory(models.Model):
     source = models.ForeignKey("Source", blank=True, null=True)

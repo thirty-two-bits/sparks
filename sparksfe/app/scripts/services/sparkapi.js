@@ -8,14 +8,11 @@
  * Provider in the sparksfeApp.
  */
 angular.module('sparksfeApp')
-  .provider('sparkApi', function ($http, $q) {
+  .provider('SparkApi', function () {
+    var apiBase, $_http, $_q;
 
-    // Private variables
-    var apiBase = 'Hello';
     // Private constructor
-    function SparkApi (apiBase) {
-      this.apiBase = apiBase;
-    }
+    var SparkApi = function () {};
 
 
     var config = function (configObj) {
@@ -23,26 +20,33 @@ angular.module('sparksfeApp')
       return configObj;
     };
 
-    var createResponse = function (data, meta, ) {
+    var Response = function (data, meta) {
+      this.data = data;
+      this.meta = meta;
+    };
 
-    }
+    var createResponse = function (resp) {
+      return new Response(resp.data, resp.meta);
+    };
 
     var handle = function (configObj) {
-      var deferred = $q.defer();
+      var deferred = $_q.defer();
       configObj = config(configObj);
-      $http(configObj).success(function (data) {
 
-      }).failure(function () {
-
+      $_http(configObj).success(function (resp) {
+        deferred.resolve(createResponse(resp));
+      }).error(function (resp) {
+        deferred.reject(createResponse(resp));
       });
 
       return deferred.promise;
     };
 
-    SparkApi.prototype.articles = function (params) {
-      handle({
-        url: ''
-      })
+    SparkApi.prototype.articles = function () {
+      return handle({
+        method: 'GET',
+        url: '/articles'
+      });
     };
 
     // Public API for configuration
@@ -51,7 +55,9 @@ angular.module('sparksfeApp')
     };
 
     // Method for instantiating
-    this.$get = function () {
+    this.$get = function ($http, $q) {
+      $_http = $http;
+      $_q = $q;
       return new SparkApi(apiBase);
     };
   });
