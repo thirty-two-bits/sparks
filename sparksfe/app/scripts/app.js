@@ -18,7 +18,7 @@ angular.module('sparksfeApp', [
     'truncate',
 ]).config(function ($stateProvider, $urlRouterProvider, $locationProvider, SparkApiProvider) {
 
-  SparkApiProvider.setApiBase('http://localhost:5000/api');
+  SparkApiProvider.setApiBase('https://mysterious-springs-6760.herokuapp.com/api');
   $urlRouterProvider.otherwise("/");
   $locationProvider.html5Mode(true);
   $stateProvider.state('main', {

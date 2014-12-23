@@ -1,1 +1,2 @@
-web: bin/worker.sh
+web: bin/http.sh
+worker: bin/worker.sh
