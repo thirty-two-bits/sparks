@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-import json
 
 from django.http import HttpResponse
+from simpleapi import api_handler
 
 from paper.models import Article, Source, Origin
 from corsheaders.middleware import CorsMiddleware
@@ -24,6 +24,7 @@ def allow_cors(func):
 
 
 @allow_cors
+@api_handler
 def stats(request):
     data = {}
     articles = Article.objects.all()
@@ -42,7 +43,7 @@ def stats(request):
     origins = Origin.objects.all()
     data['total_origins'] = origins.count()
 
-    return HttpResponse(json.dumps(data), content_type='application/javascript')
+    return data
 
 
 def article_to_json(article):
@@ -56,6 +57,7 @@ def article_to_json(article):
 
 
 @allow_cors
+@api_handler
 def articles(request):
     data = {}
     three_days_ago = datetime.utcnow() - timedelta(days=3)
@@ -65,7 +67,7 @@ def articles(request):
 
     data = map(article_to_json, articles)
 
-    return HttpResponse(json.dumps(data), content_type='application/javascript')
+    return data
 
 
 def auth_done(request):
