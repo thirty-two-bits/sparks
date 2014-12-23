@@ -4,6 +4,7 @@ from .models import SourceHistory, Source, Origin, Article
 
 class SourceAdmin(admin.ModelAdmin):
     list_display = ('name', 'kind', )
+    readonly_fields = ('current_version', )
 
 
 class OriginAdmin(admin.ModelAdmin):
