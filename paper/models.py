@@ -56,7 +56,7 @@ class SocialData(Pack2):
         if self.og and self.og.get(key):
             return self.og[key]
 
-        if self.twitter and key in self.twitter.get(key):
+        if self.twitter and self.twitter.get(key):
             return self.twitter[key]
 
         return None
